@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"crypto/tls"
 	"io"
-	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -47,12 +46,12 @@ func (proxy *ProxyHttpServer) serveWebsocketTLS(ctx *ProxyCtx, w http.ResponseWr
 	proxy.proxyWebsocket(ctx, targetConn, clientConn)
 }
 
-func (proxy *ProxyHttpServer) serveWebsocket(ctx *ProxyCtx, w http.ResponseWriter, req *http.Request, customDial ...func(network, address string) (net.Conn, error)) {
+func (proxy *ProxyHttpServer) serveWebsocket(ctx *ProxyCtx, w http.ResponseWriter, req *http.Request) {
 	targetURL := url.URL{Scheme: "ws", Host: req.URL.Host, Path: req.URL.Path}
 
 	dial := proxy.connectDial
-	if len(customDial) > 0 {
-		dial = customDial[0]
+	if ctx.CustomDial != nil {
+		dial = ctx.CustomDial
 	}
 	targetConn, err := dial("tcp", targetURL.Host)
 	if err != nil {
