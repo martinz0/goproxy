@@ -116,6 +116,7 @@ func (proxy *ProxyHttpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			if isWebSocketRequest(r) {
 				ctx.Logf("Request looks like websocket upgrade.")
 				proxy.serveWebsocket(ctx, w, r)
+				return
 			}
 
 			removeProxyHeaders(ctx, r)
